@@ -1,0 +1,2 @@
+ibrun ./minimap -p -t 32 -o opFiles -l /scratch/03201/tg824998/ucsc.hg19.fasta ../minimap_integrated/ERR091571_1_head.fastq ../minimap_integrated/ERR091571_2_head.fastq
+./minimap -p -t 64 -o opFiles -l /scratch/03201/tg824998/ucsc.hg19.fasta /scratch/03201/tg824998/ERR091571_1.fastq /scratch/03201/tg824998/ERR091571_2.fastq

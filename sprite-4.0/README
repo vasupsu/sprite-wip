@@ -1,0 +1,20 @@
+export LD_LIBRARY_PATH=/work/03201/tg824998/samtools-1.6/htslib-1.6:$LD_LIBRARY_PATH
+mpicc -o parsnip_bam parsnip_bam.c -DUSE_MPI -I/work/03201/tg824998/samtools-1.6/htslib-1.6/htslib -L/work/03201/tg824998/samtools-1.6/htslib-1.6 -lhts -lz -DUSE_OMP -fopenmp
+mpicc -o parsnip_bam parsnip_bam.c -DUSE_MPI -I/work/03201/tg824998/samtools-1.6/htslib-1.6/htslib -L/work/03201/tg824998/samtools-1.6/htslib-1.6 -lhts -lz  -lbz2 -llzma -lz -lncurses -lpthread -DUSE_OMP -fopenmp
+mpirun -np 4 ./parsnip_bam  /scratch/03201/tg824998/ucsc.hg19.fasta /scratch/03201/tg824998/Venter/Venter_chr20.bam tst
+srun --pty -p normal -N 1 -n 1 -t 1:0:0 /bin/bash -l
+time ./parsnip_bam  -t 16 /scratch/03201/tg824998/NIST/datasets/NA12878_exome/hs37d5.trunc.fa /scratch/03201/tg824998/NIST/datasets/NA12878_exome/NIST-hg001-7001-ready.bam /scratch/03201/tg824998/NIST/datasets/NA12878_exome/combined/parsnip
+
+./parsnip_bam  /scratch/03201/tg824998/ucsc.hg19.fasta /scratch/03201/tg824998/Venter/Venter_chr20.bam /scratch/03201/tg824998/Venter/parsnip
+
+time /work/03201/tg824998/strelka2_build/libexec/starling2 --region chr20:1-63025520 --ref /scratch/03201/tg824998/ucsc.hg19.fasta -genome-size 3137161264 -max-indel-size 50 -min-mapping-quality 20 --gvcf-output-prefix /scratch/03201/tg824998/Venter/results/variants/chr20_parsnip.  --gvcf-min-gqx 15 --gvcf-min-homref-gqx 15 --gvcf-max-snv-strand-bias 10 -min-qscore 17 -bsnp-ssd-no-mismatch 0.35 -bsnp-ssd-one-mismatch 0.6 -min-vexp 0.25 --enable-read-backed-phasing --stats-file /scratch/03201/tg824998/Venter/results/chr22.stats.xml --align-file /scratch/03201/tg824998/Venter/parsnip_indelReads.bam --indel-error-models-file /work/03201/tg824998/strelka2_build/share/config/indelErrorModel.json --theta-file /work/03201/tg824998/strelka2_build/share/config/theta.json
+
+time /work/03201/tg824998/strelka2_build/libexec/starling2 --region chr20:1-63025520 --ref /scratch/03201/tg824998/ucsc.hg19.fasta -genome-size 3137161264 -max-indel-size 50 -min-mapping-quality 20 --gvcf-output-prefix /scratch/03201/tg824998/Venter/results/variants/chr20.  --gvcf-min-gqx 15 --gvcf-min-homref-gqx 15 --gvcf-max-snv-strand-bias 10 -min-qscore 17 -bsnp-ssd-no-mismatch 0.35 -bsnp-ssd-one-mismatch 0.6 -min-vexp 0.25 --enable-read-backed-phasing --stats-file /scratch/03201/tg824998/Venter/results/chr22.stats.xml --align-file /scratch/03201/tg824998/Venter/Venter_chr20.bam --indel-error-models-file /work/03201/tg824998/strelka2_build/share/config/indelErrorModel.json --theta-file /work/03201/tg824998/strelka2_build/share/config/theta.json
+
+mpicc -o sampa_window -DUSE_MPI -DUSE_OMP sampa_window.c -qopenmp
+ibrun tacc_affinity ./sampa_window 500 /scratch/03201/tg824998/ucsc.hg19.fasta.fai /scratch/03201/tg824998/Venter/aeb_sprite-4/minimap_op  1
+
+mpicc -o parsnip_aebaib parsnip_aebaib.c -DUSE_MPI -I/work/03201/tg824998/samtools-1.6/htslib-1.6/htslib -L/work/03201/tg824998/samtools-1.6/htslib-1.6 -lhts -lz  -lbz2 -llzma -lz -lncurses -lpthread -DUSE_OMP -fopenmp
+time ibrun tacc_affinity ./parsnip_aebaib  /scratch/03201/tg824998/ucsc.hg19.fasta /scratch/03201/tg824998/Venter/aeb_sprite-4/minimap_op_0 /scratch/03201/tg824998/Venter/aeb_sprite-4/minimap_op_0/parsnip_tst
+./configureStrelkaGermlineWorkflow.py --bam /scratch/03201/tg824998/Venter/aeb_sprite-4/minimap_op_0/parsnip_tst_indelReads.bam --referenceFasta /scratch/03201/tg824998/ucsc.hg19.fasta --disableSequenceErrorEstimation --runDir /scratch/03201/tg824998/Venter/aeb_sprite-4/minimap_op_0/strelka_run
+time ./runWorkflow.py --quiet -m local -j 16

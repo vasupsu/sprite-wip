@@ -1,0 +1,18 @@
+echo "Running BWA"
+mpirun -np 1 prune/bwa -s 1 -t 16 <fasta_path>/ref.fasta read1.fq read2.fq <output path>/NA12878
+# -s 1 option creates sam files.
+# The last argument NA12878 is the prefix of the output file names(aeb, aib and sam file). This argument
+# is optional and by default the prefix is the file name of the first fastq file provided as input. Prune
+# adds the MPI task number at the end of the file name to distinguish files created by different MPI tasks.
+
+echo "Running SAMPA"
+mpirun -np <P1> variantDetect/sampa <fasta_path>/ref.fasta.fai <output path>/NA12878 <MPI_TASKS>
+
+echo "Running parsnip"
+mpirun -np <P2> variantDetect/parsnip <fasta_path>/ref.fasta <output path>/NA12878 <Parsnip Output VCF file prefix>
+
+
+module load intel
+module load impi
+ibrun tacc_affinity ./prune-bwamem -t 16 -s 0 -o /scratch/03201/tg824998/Venter/aeb_sprite-3/sprite3 /scratch/03201/tg824998/ucsc.hg19.fasta /scratch/03201/tg824998/Venter/read1.fq /scratch/03201/tg824998/Venter/read2.fq
+

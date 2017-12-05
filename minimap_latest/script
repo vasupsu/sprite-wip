@@ -1,0 +1,23 @@
+#!/bin/bash
+#SBATCH -J minimap
+#SBATCH -o NA12878_14x_1P.o%j
+#SBATCH -e NA12878_14x_1P.e%j
+#SBATCH -p normal
+#SBATCH -N 1 #total number of nodes
+#SBATCH -n 1 #total number of mpi tasks
+#SBATCH -t 5:0:00
+#SBATCH --mail-user=vxr162@psu.edu
+#SBATCH --mail-type=all
+
+pwd
+echo "Job started on `hostname` at `date`"
+module load intel
+module load impi
+cd /work/03201/tg824998/IPDPS18/minimap_latest
+#ibrun tacc_affinity ./minimap -o /scratch/03201/tg824998/NIST/datasets/ERR091571/combined/minimap/opFiles -p -t 16 -l /scratch/03201/tg824998/ucsc.hg19.fasta /scratch/03201/tg824998/ERR091571/ERR091571_1.fastq /scratch/03201/tg824998/ERR091571/ERR091571_2.fastq
+#ibrun tacc_affinity ./minimap -o /scratch/03201/tg824998/NIST/datasets/HG001/combined/minimap/opFiles -p -t 16 -l /scratch/03201/tg824998/ucsc.hg19.fasta /scratch/03201/tg824998/ERR194147/ERR194147_1.fastq /scratch/03201/tg824998/ERR194147/ERR194147_2.fastq
+#ibrun tacc_affinity ./minimap -o /scratch/03201/tg824998/ERR194147/aeb_sprite-4/singleNode/minimap_op -p -t 16 -l /scratch/03201/tg824998/ucsc.hg19.fasta /scratch/03201/tg824998/ERR194147/ERR194147_1.fastq /scratch/03201/tg824998/ERR194147/ERR194147_2.fastq
+ibrun tacc_affinity ./minimap -o /scratch/03201/tg824998/ERR091571/aeb_sprite-4/singleNode/minimap_op -p -t 16 -l /scratch/03201/tg824998/ucsc.hg19.fasta /scratch/03201/tg824998/ERR091571/ERR091571_1.fastq /scratch/03201/tg824998/ERR091571/ERR091571_2.fastq
+#ibrun tacc_affinity ./minimap -o /scratch/03201/tg824998/Venter/aeb_sprite-4/minimap_op -p -t 16 -l /scratch/03201/tg824998/ucsc.hg19.fasta /scratch/03201/tg824998/Venter/read1.fq /scratch/03201/tg824998/Venter/read2.fq
+echo "Job ended on `hostname` at `date`"
+exit

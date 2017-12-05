@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<title>SPRITE: Parallel SNP Detection Pipeline</title>
+
+<xmp theme="cerulean" style="display:none;">
+
+![SPRITE](sprite.png)
+### Overview
+
+SPRITE is an open-source software package providing a parallel implementation of the Single Nucleotide Polymorphisms (SNP) detection genomic data analysis workflow. It consists of three tools: PRUNE for read alignment, SAMPA for intermediate file processing, and PARSNIP for parallel SNP calling.
+
+### Features
+
+* Lightweight implementations that are easy to extend or modify.
+* SNP detection results that are competitive with state-of-the-art software.
+* End-to-end parallelism via MPI and POSIX threads.
+
+### Compiling the programs
+
+Download the source code for the latest version of SPRITE ([version 3.0](http://sourceforge.net/projects/sprite-psu/files/)) from SourceForge.
+
+Open Make.inc and set the CC, MPICC, MPI, CFLAGS, BWA_DIR and HTSLIB_DIR variables. MPI flag should be set to 1 if more than 1 compute node is to be used for running SPRITE.
+
+To build SAMPA and PARSNIP, open Makefile and set the path to the MPI compiler (for multi-node execution). By default, the compiler is set to mpicc. Type make on the command line to compile the programs.
+
+PRUNE is based on the BWA aligner. We provide a patch file called bwa.patch. Download BWA version [0.7.12](http://sourceforge.net/projects/bio-bwa/files/bwa-0.7.12.tar.bz2/download) from SourceForge, extract the source files, apply this patch, and compile BWA. The patch modifies the Makefile within BWA to use the MPI compiler instead of the C compiler.
+
+### Executing the pipeline
+
+For the alignment step, we parallelize the BWA-MEM method. Construct BWT index first. Then, create FASTQ file index by running the following command.
+
+`./prune-genreadidx path_to_readfiles/read1.fq <R>`
+
+where R is the length of the reads in read1.fq. This creates an output file path_to_readfiles/read1.fq.idx which is treated as the index for both fastq files in case of separate paired-end read files.
+
+To run the alignment in parallel using multiple single-threaded MPI processes (4 in the example below), do
+
+`mpirun -np 4 ./prune-bwamem -t 1 -s 0 -o output-path/out-prefix path_to_ref/ucsc.hg19.fasta path_to_readfiles/read1.fq path_to_readfiles/read2.fq`
+
+Since 4 MPI tasks are used in the above example, 4 .aeb (align exact binary, intermediate file) and 4 .aib (align inexact binary, intermediate) files will be created for each contig in the reference. Empty files will not be created. The files are created in the path specified by output-path and the file names have the prefix out-prefix.
+
+To run SAMPA, do
+
+`mpirun -np 4 sampa path_to_ref/ucsc.hg19.fasta.fai output-path/out-prefix 4`
+
+The first argument gives the path to the FASTA index file. The second argument is the path prefix of the aeb and aib files created in the previous step. The third argument is the number of MPI processes that were used to run PRUNE/BWA. SAMPA removes the files created by PRUNE and creates sorted AEB/AIB files instead using the same prefix output-path/out-prefix.
+
+To execute PARSNIP on the output files produced by SAMPA, do
+
+`mpirun -np <P> [options] parsnip path_to_ref/ucsc.hg19.fasta output-path/out-prefix output_vcf_path/vcfFileNamePrefix`
+
+The first non-optional argument is the reference fasta file. The second non-optional argument is the same as SAMPA's second argument and the third non-optional argument is the prefix for the output vcf file to be created (.vcf is added to this argument).
+
+PARSNIP's optional arguments are described below.
+
+Options:
+
+        -t INT        number of threads [Default value: 1]  
+        --MQ=INT      minimum average SNP mapping quality filter [Default value: 20]. This is the average mapping quality of the reads which have an alternate allele occuring at this position.  
+        --DP=INT      minimum read depth filter [Default value: 2]. Total read depth at this position.  
+        --SB=REAL     minimum strand bias filter [Default value: .1]. This filter reduces false positive SNP calls by eliminating SNPs which occur primarily on either forward or reverse strands. SB=0 indicates that SNPs occur wholly in one type of strand (False positive) and SB=1 indicates that SNP occurs in both strand types in equal proportions.  
+        --AAF=INT     minimum alternate allele frequency filter [Default value: 20]. Denotes the percentage of reads with alternate allele among all reads mapping to this position.  
+        --AAC=INT     minimum alternate allele count filter [Default value: 2]. This is the number of occurences of the alternate allele.  
+
+We have tested SPRITE on the data sets provided by the
+[SMASH](http://smash.cs.berkeley.edu) genetic variant benchmarking
+toolkit and Platinum Genomes NA12878 and NA12877 provided by [Illumina](http://www.illumina.com/platinumgenomes/).
+
+### Assumptions and Limitations
+
+* Both read files of a sample in case of paired-end reads are assumed to have the same read length. 
+* We have tested SPRITE only for Illumina sequenced reads.
+* The FASTQ files should be uncompressed before generating FASTQ index file using prune-genreadidx program.
+* PRUNE does not perform I/O concurrently with alignment.
+
+### Support, Comments, Suggestions
+
+Please email Vasudevan Rengasamy (<vxr162@psu.edu>) and Kamesh Madduri (<madduri@cse.psu.edu>).
+
+### Citing SPRITE
+
+If you use the current version of SPRITE (3.0), please cite our ISC-HPC 2016
+paper.
+
+> V. Rengasamy and K. Madduri, "SPRITE: A Fast Parallel SNP Detection
+Pipeline," Proc. ISC High Performance 2016, June 2016.
+> ([talk slides PDF](SPRITE_ISC16_slides.pdf))
+
+### Additional Details
+
+Please refer to this technical report.
+
+> V. Rengasamy and K. Madduri, "Engineering a high-performance SNP detection pipeline," Penn State Computer Science and Engineering Technical Report, April 2015.
+> ([PDF](http://sites.psu.edu/xpsgenomics/wp-content/uploads/sites/13771/2015/05/SPRITE_techreport.pdf))
+
+### Support
+
+This work is supported by the National Science Foundation CCF award #1439057. Please visit our [project website](http://sites.psu.edu/xpsgenomics) for more information.
+
+</xmp>
+
+<script src="http://strapdownjs.com/v/0.2/strapdown.js"></script>
+
+</html>

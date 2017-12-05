@@ -1,0 +1,66 @@
+diff -rupN bwa-0.7.12/bwa.c /storage/home/vxr162/work/multi_node/bwa-0.7.12/bwa.c
+--- bwa-0.7.12/bwa.c	2014-12-23 15:35:48.000000000 -0500
++++ /storage/home/vxr162/work/multi_node/bwa-0.7.12/bwa.c	2015-11-26 19:38:40.000000000 -0500
+@@ -1,4 +1,5 @@
+ #include <string.h>
++#include <sys/time.h>
+ #include <stdio.h>
+ #include <zlib.h>
+ #include <assert.h>
+@@ -16,7 +17,7 @@
+ int bwa_verbose = 3;
+ char bwa_rg_id[256];
+ char *bwa_pg;
+-
++extern long readE;
+ /************************
+  * Batch FASTA/Q reader *
+  ************************/
+@@ -37,10 +38,14 @@ static inline void kseq2bseq1(const kseq
+ 	s->seq = strdup(ks->seq.s);
+ 	s->qual = ks->qual.l? strdup(ks->qual.s) : 0;
+ 	s->l_seq = strlen(s->seq);
++	s->l_name = ks->name.l;
++	s->l_comment = ks->comment.l;
+ }
+ 
+ bseq1_t *bseq_read(int chunk_size, int *n_, void *ks1_, void *ks2_)
+ {
++	struct timeval stTime, etTime;
++	gettimeofday(&stTime, NULL);
+ 	kseq_t *ks = (kseq_t*)ks1_, *ks2 = (kseq_t*)ks2_;
+ 	int size = 0, m, n;
+ 	bseq1_t *seqs;
+@@ -71,6 +76,9 @@ bseq1_t *bseq_read(int chunk_size, int *
+ 			fprintf(stderr, "[W::%s] the 1st file has fewer sequences.\n", __func__);
+ 	}
+ 	*n_ = n;
++	gettimeofday(&etTime, NULL);
++        long elapsed = (etTime.tv_sec * 1000000 + etTime.tv_usec) - (stTime.tv_sec * 1000000 + stTime.tv_usec);
++        readE+=elapsed;
+ 	return seqs;
+ }
+ 
+diff -rupN bwa-0.7.12/bwa.h /storage/home/vxr162/work/multi_node/bwa-0.7.12/bwa.h
+--- bwa-0.7.12/bwa.h	2014-12-23 15:35:48.000000000 -0500
++++ /storage/home/vxr162/work/multi_node/bwa-0.7.12/bwa.h	2015-11-26 19:38:40.000000000 -0500
+@@ -24,6 +24,7 @@ typedef struct {
+ 
+ typedef struct {
+ 	int l_seq, id;
++	int l_name, l_comment;
+ 	char *name, *comment, *seq, *qual, *sam;
+ } bseq1_t;
+ 
+diff -rupN bwa-0.7.12/fastmap.c /storage/home/vxr162/work/multi_node/bwa-0.7.12/fastmap.c
+--- bwa-0.7.12/fastmap.c	2014-12-23 15:35:48.000000000 -0500
++++ /storage/home/vxr162/work/multi_node/bwa-0.7.12/fastmap.c	2016-01-04 00:41:46.026886995 -0500
+@@ -15,7 +15,7 @@
+ KSEQ_DECLARE(gzFile)
+ 
+ extern unsigned char nst_nt4_table[256];
+-
++long readE=0;
+ void *kopen(const char *fn, int *_fd);
+ int kclose(void *a);
+ void kt_pipeline(int n_threads, void *(*func)(void*, int, void*), void *shared_data, int n_steps);

@@ -1,0 +1,20 @@
+#!/bin/bash
+#SBATCH -J prune30x
+#SBATCH -o prune3_Venter_1N.o%j
+#SBATCH -e prune3_Venter_1N.e%j
+#SBATCH -N 1
+#SBATCH -n 1
+#SBATCH -p normal
+#SBATCH -t 10:00:00
+
+module load intel
+module load impi
+cd /work/03201/tg824998/IPDPS18/sprite-psu-3.0/prune
+echo "Job started on `hostname` at `date`"
+#bwa index /scratch/03201/tg824998/ucsc.hg19.fasta
+export OMP_NUM_THREADS=16
+export LD_LIBRARY_PATH=/work/03201/tg824998/samtools-1.1/htslib-1.1:$LD_LIBRARY_PATH
+ibrun tacc_affinity ./prune-bwamem -t 16 -s 0 -o /scratch/03201/tg824998/Venter/aeb_sprite-3/sprite3 /scratch/03201/tg824998/ucsc.hg19.fasta /scratch/03201/tg824998/Venter/read1.fq /scratch/03201/tg824998/Venter/read2.fq
+#ibrun tacc_affinity ./prune-bwamem -t 16 -s 0 -o /scratch/03201/tg824998/ERR194147/aeb_sprite-3/singleNode/sprite3 /scratch/03201/tg824998/ucsc.hg19.fasta /scratch/03201/tg824998/ERR194147/ERR194147_1.fastq /scratch/03201/tg824998/ERR194147/ERR194147_2.fastq
+#ibrun tacc_affinity ./prune-bwamem -t 16 -s 0 -o /scratch/03201/tg824998/ERR091571/aeb_sprite-3/singleNode/sprite3 /scratch/03201/tg824998/ucsc.hg19.fasta /scratch/03201/tg824998/ERR091571/ERR091571_1.fastq /scratch/03201/tg824998/ERR091571/ERR091571_2.fastq
+echo "Job ended at `date`"

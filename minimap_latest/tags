@@ -1,0 +1,359 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+AC_KSEQ_H	./kseq.h	29;"	d
+AC_KSORT_H	./ksort.h	29;"	d
+AC_KVEC_H	./kvec.h	49;"	d
+AC_VERSION_KHASH_H	./khash.h	126;"	d
+B	./minimap.h	/^	mm_idx_bucket_t *B;$/;"	m	struct:__anon6
+KDQ_DECLARE	./kdq.h	107;"	d
+KDQ_INIT	./kdq.h	105;"	d
+KDQ_INIT2	./kdq.h	93;"	d
+KHASH_DECLARE	./khash.h	349;"	d
+KHASH_INIT	./khash.h	357;"	d
+KHASH_INIT2	./khash.h	353;"	d
+KHASH_MAP_INIT_INT	./khash.h	585;"	d
+KHASH_MAP_INIT_INT64	./khash.h	600;"	d
+KHASH_MAP_INIT_STR	./khash.h	616;"	d
+KHASH_SET_INIT_INT	./khash.h	577;"	d
+KHASH_SET_INIT_INT64	./khash.h	592;"	d
+KHASH_SET_INIT_STR	./khash.h	608;"	d
+KRADIX_SORT_INIT	./ksort.h	108;"	d
+KSEQ_DECLARE	./kseq.h	241;"	d
+KSEQ_INIT	./example.c	/^KSEQ_INIT(gzFile, gzread)$/;"	f
+KSEQ_INIT	./kseq.h	239;"	d
+KSEQ_INIT	./sdust.c	/^KSEQ_INIT(gzFile, gzread)$/;"	f
+KSEQ_INIT2	./kseq.h	233;"	d
+KSORT_INIT	./ksort.h	41;"	d
+KSORT_INIT_GENERIC	./ksort.h	103;"	d
+KSORT_INIT_STR	./ksort.h	104;"	d
+KSORT_SWAP	./ksort.h	39;"	d
+KSTREAM_DECLARE	./kseq.h	151;"	d
+KSTREAM_INIT	./kseq.h	149;"	d
+KSTREAM_INIT2	./kseq.h	143;"	d
+KSTRING_T	./kseq.h	82;"	d
+KS_SEP_LINE	./kseq.h	37;"	d
+KS_SEP_MAX	./kseq.h	38;"	d
+KS_SEP_SPACE	./kseq.h	35;"	d
+KS_SEP_TAB	./kseq.h	36;"	d
+MINIMAP_H	./minimap.h	2;"	d
+MM_BSEQ_H	./bseq.h	2;"	d
+MM_DEREP_Q50	./minimap.h	10;"	d
+MM_F_AVA	./minimap.h	15;"	d
+MM_F_NO_ISO	./minimap.h	14;"	d
+MM_F_NO_SELF	./minimap.h	13;"	d
+MM_F_WITH_REP	./minimap.h	12;"	d
+MM_IDX_DEF_B	./minimap.h	9;"	d
+MM_IDX_MAGIC	./index.c	269;"	d	file:
+MM_VERSION	./main.c	9;"	d	file:
+P	./sdust.c	/^	perf_intv_v P; \/\/ the list of perfect intervals for the current window, sorted by descending start and then by ascending finish$/;"	m	struct:sdust_buf_s	file:
+RS_MIN_SIZE	./ksort.h	106;"	d
+SDUST_H	./sdust.h	2;"	d
+SD_WLEN	./sdust.c	8;"	d	file:
+SD_WMSK	./sdust.c	10;"	d	file:
+SD_WTOT	./sdust.c	9;"	d	file:
+__AC_KDQ_H	./kdq.h	2;"	d
+__AC_KHASH_H	./khash.h	118;"	d
+__KDQ_IMPL	./kdq.h	20;"	d
+__KDQ_TYPE	./kdq.h	8;"	d
+__KHASH_IMPL	./khash.h	203;"	d
+__KHASH_PROTOTYPES	./khash.h	194;"	d
+__KHASH_TYPE	./khash.h	186;"	d
+__KSEQ_BASIC	./kseq.h	164;"	d
+__KSEQ_READ	./kseq.h	184;"	d
+__KSEQ_TYPE	./kseq.h	226;"	d
+__KS_BASIC	./kseq.h	51;"	d
+__KS_GETUNTIL	./kseq.h	93;"	d
+__KS_INLINED	./kseq.h	66;"	d
+__KS_TYPE	./kseq.h	40;"	d
+__ac_HASH_UPPER	./khash.h	/^static const double __ac_HASH_UPPER = 0.77;$/;"	v
+__ac_Wang_hash	./khash.h	/^static kh_inline khint_t __ac_Wang_hash(khint_t key)$/;"	f
+__ac_X31_hash_string	./khash.h	/^static kh_inline khint_t __ac_X31_hash_string(const char *s)$/;"	f
+__ac_fsize	./khash.h	165;"	d
+__ac_isdel	./khash.h	158;"	d
+__ac_iseither	./khash.h	159;"	d
+__ac_isempty	./khash.h	157;"	d
+__ac_set_isboth_false	./khash.h	162;"	d
+__ac_set_isdel_false	./khash.h	160;"	d
+__ac_set_isdel_true	./khash.h	163;"	d
+__ac_set_isempty_false	./khash.h	161;"	d
+__kstring_t	./kseq.h	/^typedef struct __kstring_t {$/;"	s
+a	./index.c	/^	mm128_v a;$/;"	m	struct:__anon14	file:
+a	./map.c	/^	uint64_t *a;$/;"	m	struct:mm_tbuf_s	file:
+a	./minimap.h	/^	mm128_v a;   \/\/ (minimizer, position) array$/;"	m	struct:__anon5
+a	./minimap.h	/^typedef struct { size_t n, m; mm128_t *a; } mm128_v;$/;"	m	struct:__anon2
+a	./minimap.h	/^typedef struct { size_t n, m; uint32_t *a; } uint32_v;$/;"	m	struct:__anon4
+a	./minimap.h	/^typedef struct { size_t n, m; uint64_t *a; } uint64_v;$/;"	m	struct:__anon3
+b	./map.c	/^	size_t *b, *p;$/;"	m	struct:mm_tbuf_s	file:
+b	./minimap.h	/^	int b, w, k;$/;"	m	struct:__anon6
+batch_size	./map.c	/^	int batch_size, n_processed, n_threads;$/;"	m	struct:__anon15	file:
+bseq1_t	./bseq.h	/^} bseq1_t;$/;"	t	typeref:struct:__anon17
+bseq_close	./bseq.c	/^void bseq_close(bseq_file_t *fp)$/;"	f
+bseq_eof	./bseq.c	/^int bseq_eof(bseq_file_t *fp)$/;"	f
+bseq_file_s	./bseq.c	/^struct bseq_file_s {$/;"	s	file:
+bseq_file_t	./bseq.h	/^typedef struct bseq_file_s bseq_file_t;$/;"	t	typeref:struct:bseq_file_s
+bseq_open	./bseq.c	/^bseq_file_t *bseq_open(const char *fn)$/;"	f
+bseq_read	./bseq.c	/^bseq1_t *bseq_read(bseq_file_t *fp, int chunk_size, int *n_)$/;"	f
+buf	./map.c	/^	mm_tbuf_t **buf;$/;"	m	struct:__anon16	file:
+cnt	./minimap.h	/^	uint32_t cnt:31, rev:1;$/;"	m	struct:__anon7
+coef	./map.c	/^	mm128_v coef; \/\/ Hough transform coefficient$/;"	m	struct:mm_tbuf_s	file:
+cputime	./misc.c	/^double cputime()$/;"	f
+cv	./kthread.c	/^	pthread_cond_t cv;$/;"	m	struct:ktp_t	file:
+data	./kthread.c	/^	void *data;$/;"	m	struct:__anon12	file:
+data	./kthread.c	/^	void *data;$/;"	m	struct:kt_for_t	file:
+depth	./ksort.h	/^	int depth;$/;"	m	struct:__anon9
+drop_rep	./map.c	/^static void drop_rep(mm_tbuf_t *b, int min_cnt)$/;"	f	file:
+find_perfect	./sdust.c	/^static void find_perfect(perf_intv_v *P, const kdq_t(int) *w, int T, int start, int L, int rv, const int *cv)$/;"	f	file:
+finish	./sdust.c	/^	int start, finish;$/;"	m	struct:__anon10	file:
+flag	./minimap.h	/^	int flag;    \/\/ see MM_F_* macros$/;"	m	struct:__anon8
+fp	./bseq.c	/^	gzFile fp;$/;"	m	struct:bseq_file_s	file:
+fp	./index.c	/^	bseq_file_t *fp;$/;"	m	struct:__anon13	file:
+fp	./map.c	/^	bseq_file_t *fp;$/;"	m	struct:__anon15	file:
+fpUnMapped	./map.c	/^FILE *fpUnMapped[200];$/;"	v
+freq_thres	./minimap.h	/^	float freq_thres;$/;"	m	struct:__anon6
+func	./kthread.c	/^	void (*func)(void*,long,int);$/;"	m	struct:kt_for_t	file:
+func	./kthread.c	/^	void *(*func)(void*, int, void*);$/;"	m	struct:ktp_t	file:
+get_reg	./map.c	/^static void get_reg(mm_tbuf_t *b, int radius, int k, int min_cnt, int max_gap, float merge_frac, int flag)$/;"	f	file:
+gt_low32	./map.c	64;"	d	file:
+h	./minimap.h	/^	void *h;     \/\/ hash table indexing _p_ and minimizers appearing once$/;"	m	struct:__anon5
+hash64	./sketch.c	/^static inline uint64_t hash64(uint64_t key, uint64_t mask)$/;"	f	file:
+i	./kthread.c	/^	long i;$/;"	m	struct:__anon11	file:
+ibatch_size	./index.c	/^	uint64_t ibatch_size, n_read;$/;"	m	struct:__anon13	file:
+idx_eq	./index.c	9;"	d	file:
+idx_hash	./index.c	8;"	d	file:
+idxhash_t	./index.c	/^typedef khash_t(idx) idxhash_t;$/;"	t	file:
+index	./kthread.c	/^	int64_t index;$/;"	m	struct:__anon12	file:
+index	./kthread.c	/^	int64_t index;$/;"	m	struct:ktp_t	file:
+intv	./map.c	/^	mm128_v intv; \/\/ intervals on sorted coef$/;"	m	struct:mm_tbuf_s	file:
+is_eof	./bseq.c	/^	int is_eof;$/;"	m	struct:bseq_file_s	file:
+k	./minimap.h	/^	int b, w, k;$/;"	m	struct:__anon6
+kcalloc	./khash.h	172;"	d
+kdq_at	./kdq.h	18;"	d
+kdq_destroy	./kdq.h	120;"	d
+kdq_first	./kdq.h	16;"	d
+kdq_init	./kdq.h	119;"	d
+kdq_last	./kdq.h	17;"	d
+kdq_pop	./kdq.h	124;"	d
+kdq_push	./kdq.h	123;"	d
+kdq_pushp	./kdq.h	122;"	d
+kdq_resize	./kdq.h	121;"	d
+kdq_shift	./kdq.h	127;"	d
+kdq_size	./kdq.h	15;"	d
+kdq_t	./kdq.h	14;"	d
+kdq_unshift	./kdq.h	126;"	d
+kdq_unshiftp	./kdq.h	125;"	d
+keep_name	./index.c	/^	int tbatch_size, n_processed, keep_name;$/;"	m	struct:__anon13	file:
+kfree	./khash.h	181;"	d
+kh_begin	./khash.h	520;"	d
+kh_clear	./khash.h	445;"	d
+kh_cstr_t	./khash.h	/^typedef const char *kh_cstr_t;$/;"	t
+kh_del	./khash.h	483;"	d
+kh_destroy	./khash.h	438;"	d
+kh_end	./khash.h	527;"	d
+kh_exist	./khash.h	491;"	d
+kh_foreach	./khash.h	550;"	d
+kh_foreach_value	./khash.h	564;"	d
+kh_get	./khash.h	475;"	d
+kh_init	./khash.h	431;"	d
+kh_inline	./khash.h	148;"	d
+kh_inline	./khash.h	150;"	d
+kh_int64_hash_equal	./khash.h	381;"	d
+kh_int64_hash_func	./khash.h	377;"	d
+kh_int_hash_equal	./khash.h	371;"	d
+kh_int_hash_func	./khash.h	367;"	d
+kh_int_hash_func2	./khash.h	414;"	d
+kh_key	./khash.h	499;"	d
+kh_n_buckets	./khash.h	541;"	d
+kh_put	./khash.h	466;"	d
+kh_resize	./khash.h	453;"	d
+kh_size	./khash.h	534;"	d
+kh_str_hash_equal	./khash.h	402;"	d
+kh_str_hash_func	./khash.h	398;"	d
+kh_val	./khash.h	508;"	d
+kh_value	./khash.h	513;"	d
+khash_t	./khash.h	424;"	d
+khint32_t	./khash.h	/^typedef unsigned int khint32_t;$/;"	t
+khint32_t	./khash.h	/^typedef unsigned long khint32_t;$/;"	t
+khint64_t	./khash.h	/^typedef unsigned long khint64_t;$/;"	t
+khint64_t	./khash.h	/^typedef unsigned long long khint64_t;$/;"	t
+khint_t	./khash.h	/^typedef khint32_t khint_t;$/;"	t
+khiter_t	./khash.h	/^typedef khint_t khiter_t;$/;"	t
+klib_unused	./kdq.h	101;"	d
+klib_unused	./kdq.h	99;"	d
+kmalloc	./khash.h	175;"	d
+krealloc	./khash.h	178;"	d
+kroundup32	./khash.h	168;"	d
+kroundup32	./kseq.h	90;"	d
+ks	./bseq.c	/^	kseq_t *ks;$/;"	m	struct:bseq_file_s	file:
+ks_eof	./kseq.h	48;"	d
+ks_isort_stack_t	./ksort.h	/^} ks_isort_stack_t;$/;"	t	typeref:struct:__anon9
+ks_ksmall	./ksort.h	96;"	d
+ks_lt_generic	./ksort.h	98;"	d
+ks_lt_str	./ksort.h	99;"	d
+ks_rewind	./kseq.h	49;"	d
+kseq_rewind	./kseq.h	162;"	d
+ksstr_t	./ksort.h	/^typedef const char *ksstr_t;$/;"	t
+kstring_t	./kseq.h	/^} kstring_t;$/;"	t	typeref:struct:__kstring_t
+kt_for	./kthread.c	/^void kt_for(int n_threads, void (*func)(void*,long,int), void *data, long n)$/;"	f
+kt_for_t	./kthread.c	/^typedef struct kt_for_t {$/;"	s	file:
+kt_for_t	./kthread.c	/^} kt_for_t;$/;"	t	typeref:struct:kt_for_t	file:
+kt_pipeline	./kthread.c	/^void kt_pipeline(int n_threads, void *(*func)(void*, int, void*), void *shared_data, int n_steps)$/;"	f
+ktf_worker	./kthread.c	/^static void *ktf_worker(void *data)$/;"	f	file:
+ktf_worker_t	./kthread.c	/^} ktf_worker_t;$/;"	t	typeref:struct:__anon11	file:
+ktp_t	./kthread.c	/^typedef struct ktp_t {$/;"	s	file:
+ktp_t	./kthread.c	/^} ktp_t;$/;"	t	typeref:struct:ktp_t	file:
+ktp_worker	./kthread.c	/^static void *ktp_worker(void *data)$/;"	f	file:
+ktp_worker_t	./kthread.c	/^} ktp_worker_t;$/;"	t	typeref:struct:__anon12	file:
+kv_A	./kvec.h	58;"	d
+kv_a	./kvec.h	93;"	d
+kv_copy	./kvec.h	71;"	d
+kv_destroy	./kvec.h	57;"	d
+kv_init	./kvec.h	56;"	d
+kv_max	./kvec.h	61;"	d
+kv_pop	./kvec.h	59;"	d
+kv_push	./kvec.h	77;"	d
+kv_pushp	./kvec.h	85;"	d
+kv_resize	./kvec.h	63;"	d
+kv_reverse	./kvec.h	99;"	d
+kv_roundup32	./kvec.h	53;"	d
+kv_size	./kvec.h	60;"	d
+kvec_t	./kvec.h	55;"	d
+l	./kseq.h	/^	unsigned l, m;$/;"	m	struct:__kstring_t
+l	./sdust.c	/^	int r, l;$/;"	m	struct:__anon10	file:
+l_seq	./bseq.h	/^	int l_seq, rid;$/;"	m	struct:__anon17
+left	./ksort.h	/^	void *left, *right;$/;"	m	struct:__anon9
+len	./minimap.h	/^	int32_t *len;    \/\/ length of each reference sequence$/;"	m	struct:__anon6
+len	./minimap.h	/^	uint32_t len;$/;"	m	struct:__anon7
+liftrlimit	./main.c	/^void liftrlimit()$/;"	f
+lt_low32	./map.c	62;"	d	file:
+m	./kseq.h	/^	unsigned l, m;$/;"	m	struct:__kstring_t
+m	./map.c	/^	uint32_t n, m;$/;"	m	struct:mm_tbuf_s	file:
+m	./minimap.h	/^typedef struct { size_t n, m; mm128_t *a; } mm128_v;$/;"	m	struct:__anon2
+m	./minimap.h	/^typedef struct { size_t n, m; uint32_t *a; } uint32_v;$/;"	m	struct:__anon4
+m	./minimap.h	/^typedef struct { size_t n, m; uint64_t *a; } uint64_v;$/;"	m	struct:__anon3
+main	./main.c	/^int main(int argc, char *argv[])$/;"	f
+max_gap	./minimap.h	/^	int max_gap; \/\/ break a chain if there are no minimizers in a max_gap window$/;"	m	struct:__anon8
+max_occ	./minimap.h	/^	uint32_t max_occ;$/;"	m	struct:__anon6
+merge_frac	./minimap.h	/^	float merge_frac; \/\/ merge two chains if merge_frac fraction of minimzers are shared between the chains$/;"	m	struct:__anon8
+mi	./index.c	/^	mm_idx_t *mi;$/;"	m	struct:__anon13	file:
+mi	./map.c	/^	const mm_idx_t *mi;$/;"	m	struct:__anon15	file:
+min_cnt	./minimap.h	/^	int min_cnt; \/\/ minimum number of minimizers to start a chain$/;"	m	struct:__anon8
+min_match	./minimap.h	/^	int min_match;$/;"	m	struct:__anon8
+mini	./map.c	/^	mm128_v mini; \/\/ query minimizers$/;"	m	struct:mm_tbuf_s	file:
+mm128_t	./minimap.h	/^} mm128_t;$/;"	t	typeref:struct:__anon1
+mm128_v	./minimap.h	/^typedef struct { size_t n, m; mm128_t *a; } mm128_v;$/;"	t	typeref:struct:__anon2
+mm_idx_add	./index.c	/^static void mm_idx_add(mm_idx_t *mi, int n, const mm128_t *a)$/;"	f	file:
+mm_idx_bucket_t	./minimap.h	/^} mm_idx_bucket_t;$/;"	t	typeref:struct:__anon5
+mm_idx_build	./index.c	/^mm_idx_t *mm_idx_build(const char *fn, int w, int k, int n_threads) \/\/ a simpler interface$/;"	f
+mm_idx_cal_max_occ	./index.c	/^uint32_t mm_idx_cal_max_occ(const mm_idx_t *mi, float f)$/;"	f
+mm_idx_destroy	./index.c	/^void mm_idx_destroy(mm_idx_t *mi)$/;"	f
+mm_idx_dump	./index.c	/^void mm_idx_dump(FILE *fp, const mm_idx_t *mi)$/;"	f
+mm_idx_gen	./index.c	/^mm_idx_t *mm_idx_gen(bseq_file_t *fp, int w, int k, int b, int tbatch_size, int n_threads, uint64_t ibatch_size, int keep_name)$/;"	f
+mm_idx_get	./index.c	/^const uint64_t *mm_idx_get(const mm_idx_t *mi, uint64_t minier, int *n)$/;"	f
+mm_idx_init	./index.c	/^mm_idx_t *mm_idx_init(int w, int k, int b)$/;"	f
+mm_idx_load	./index.c	/^mm_idx_t *mm_idx_load(FILE *fp)$/;"	f
+mm_idx_post	./index.c	/^static void mm_idx_post(mm_idx_t *mi, int n_threads)$/;"	f	file:
+mm_idx_set_max_occ	./index.c	/^void mm_idx_set_max_occ(mm_idx_t *mi, float f)$/;"	f
+mm_idx_t	./minimap.h	/^} mm_idx_t;$/;"	t	typeref:struct:__anon6
+mm_map	./map.c	/^const mm_reg1_t *mm_map(const mm_idx_t *mi, int l_seq, const char *seq, int *n_regs, mm_tbuf_t *b, const mm_mapopt_t *opt, const char *name)$/;"	f
+mm_map_file	./map.c	/^int mm_map_file(const mm_idx_t *idx, const char *fn, const mm_mapopt_t *opt, int n_threads, int tbatch_size)$/;"	f
+mm_mapopt_init	./map.c	/^void mm_mapopt_init(mm_mapopt_t *opt)$/;"	f
+mm_mapopt_t	./minimap.h	/^} mm_mapopt_t;$/;"	t	typeref:struct:__anon8
+mm_realtime0	./misc.c	/^double mm_realtime0;$/;"	v
+mm_reg1_t	./minimap.h	/^} mm_reg1_t;$/;"	t	typeref:struct:__anon7
+mm_sketch	./sketch.c	/^void mm_sketch(const char *str, int len, int w, int k, uint32_t rid, mm128_v *p)$/;"	f
+mm_tbuf_destroy	./map.c	/^void mm_tbuf_destroy(mm_tbuf_t *b)$/;"	f
+mm_tbuf_init	./map.c	/^mm_tbuf_t *mm_tbuf_init()$/;"	f
+mm_tbuf_s	./map.c	/^struct mm_tbuf_s { \/\/ per-thread buffer$/;"	s	file:
+mm_tbuf_t	./minimap.h	/^typedef struct mm_tbuf_s mm_tbuf_t;$/;"	t	typeref:struct:mm_tbuf_s
+mm_verbose	./misc.c	/^int mm_verbose = 3;$/;"	v
+mutex	./kthread.c	/^	pthread_mutex_t mutex;$/;"	m	struct:ktp_t	file:
+n	./kthread.c	/^	long n;$/;"	m	struct:kt_for_t	file:
+n	./map.c	/^	uint32_t n, m;$/;"	m	struct:mm_tbuf_s	file:
+n	./minimap.h	/^	int32_t n;   \/\/ size of the _p_ array$/;"	m	struct:__anon5
+n	./minimap.h	/^	uint32_t n;  \/\/ number of reference sequences$/;"	m	struct:__anon6
+n	./minimap.h	/^typedef struct { size_t n, m; mm128_t *a; } mm128_v;$/;"	m	struct:__anon2
+n	./minimap.h	/^typedef struct { size_t n, m; uint32_t *a; } uint32_v;$/;"	m	struct:__anon4
+n	./minimap.h	/^typedef struct { size_t n, m; uint64_t *a; } uint64_v;$/;"	m	struct:__anon3
+n_processed	./index.c	/^	int tbatch_size, n_processed, keep_name;$/;"	m	struct:__anon13	file:
+n_processed	./map.c	/^	int batch_size, n_processed, n_threads;$/;"	m	struct:__anon15	file:
+n_read	./index.c	/^	uint64_t ibatch_size, n_read;$/;"	m	struct:__anon13	file:
+n_reg	./map.c	/^	int *n_reg;$/;"	m	struct:__anon16	file:
+n_seq	./index.c	/^    int n_seq;$/;"	m	struct:__anon14	file:
+n_seq	./map.c	/^    int n_seq;$/;"	m	struct:__anon16	file:
+n_steps	./kthread.c	/^	int n_workers, n_steps;$/;"	m	struct:ktp_t	file:
+n_threads	./kthread.c	/^	int n_threads;$/;"	m	struct:kt_for_t	file:
+n_threads	./map.c	/^	int batch_size, n_processed, n_threads;$/;"	m	struct:__anon15	file:
+n_workers	./kthread.c	/^	int n_workers, n_steps;$/;"	m	struct:ktp_t	file:
+name	./bseq.h	/^	char *name, *seq, *qual;$/;"	m	struct:__anon17
+name	./minimap.h	/^	char **name; \/\/ TODO: if this uses too much RAM, switch one concatenated string$/;"	m	struct:__anon6
+opt	./map.c	/^	const mm_mapopt_t *opt;$/;"	m	struct:__anon15	file:
+p	./map.c	/^	const pipeline_t *p;$/;"	m	struct:__anon16	file:
+p	./map.c	/^	size_t *b, *p;$/;"	m	struct:mm_tbuf_s	file:
+p	./minimap.h	/^	uint64_t *p; \/\/ position array for minimizers appearing >1 times$/;"	m	struct:__anon5
+perf_intv_t	./sdust.c	/^} perf_intv_t;$/;"	t	typeref:struct:__anon10	file:
+perf_intv_v	./sdust.c	/^typedef kvec_t(perf_intv_t) perf_intv_v;$/;"	t	file:
+pipeline_t	./index.c	/^} pipeline_t;$/;"	t	typeref:struct:__anon13	file:
+pipeline_t	./map.c	/^} pipeline_t;$/;"	t	typeref:struct:__anon15	file:
+pl	./kthread.c	/^	struct ktp_t *pl;$/;"	m	struct:__anon12	typeref:struct:__anon12::ktp_t	file:
+proc_intv	./map.c	/^static void proc_intv(mm_tbuf_t *b, int which, int k, int min_cnt, int max_gap)$/;"	f	file:
+push_intv	./map.c	/^static inline void push_intv(mm128_v *intv, int start, int end, float merge_frac)$/;"	f	file:
+qe	./minimap.h	/^	int32_t qs, qe, rs, re;$/;"	m	struct:__anon7
+qs	./minimap.h	/^	int32_t qs, qe, rs, re;$/;"	m	struct:__anon7
+qual	./bseq.h	/^	char *name, *seq, *qual;$/;"	m	struct:__anon17
+r	./sdust.c	/^	int r, l;$/;"	m	struct:__anon10	file:
+radius	./minimap.h	/^	int radius;  \/\/ bandwidth to cluster hits$/;"	m	struct:__anon8
+re	./minimap.h	/^	int32_t qs, qe, rs, re;$/;"	m	struct:__anon7
+realtime	./misc.c	/^double realtime()$/;"	f
+reg	./map.c	/^	mm_reg1_t **reg;$/;"	m	struct:__anon16	file:
+reg2mini	./map.c	/^	uint32_v reg2mini;$/;"	m	struct:mm_tbuf_s	file:
+rep	./minimap.h	/^	uint32_t rid:31, rep:1;$/;"	m	struct:__anon7
+rep_aux	./map.c	/^	uint32_v rep_aux;$/;"	m	struct:mm_tbuf_s	file:
+res	./sdust.c	/^	uint64_v res;  \/\/ the result$/;"	m	struct:sdust_buf_s	file:
+rev	./minimap.h	/^	uint32_t cnt:31, rev:1;$/;"	m	struct:__anon7
+rid	./bseq.h	/^	int l_seq, rid;$/;"	m	struct:__anon17
+rid	./minimap.h	/^	uint32_t rid:31, rep:1;$/;"	m	struct:__anon7
+right	./ksort.h	/^	void *left, *right;$/;"	m	struct:__anon9
+rs	./minimap.h	/^	int32_t qs, qe, rs, re;$/;"	m	struct:__anon7
+s	./kseq.h	/^	char *s;$/;"	m	struct:__kstring_t
+save_masked_regions	./sdust.c	/^static inline void save_masked_regions(uint64_v *res, perf_intv_v *P, int start)$/;"	f	file:
+sdb	./map.c	/^	sdust_buf_t *sdb;$/;"	m	struct:mm_tbuf_s	file:
+sdust	./sdust.c	/^uint64_t *sdust(const uint8_t *seq, int l_seq, int T, int W, int *n)$/;"	f
+sdust_buf_destroy	./sdust.c	/^void sdust_buf_destroy(sdust_buf_t *buf)$/;"	f
+sdust_buf_init	./sdust.c	/^sdust_buf_t *sdust_buf_init(void)$/;"	f
+sdust_buf_s	./sdust.c	/^struct sdust_buf_s {$/;"	s	file:
+sdust_buf_t	./sdust.h	/^typedef struct sdust_buf_s sdust_buf_t;$/;"	t	typeref:struct:sdust_buf_s
+sdust_core	./sdust.c	/^const uint64_t *sdust_core(const uint8_t *seq, int l_seq, int T, int W, int *n, sdust_buf_t *buf)$/;"	f
+sdust_thres	./minimap.h	/^	int sdust_thres;  \/\/ score threshold for SDUST; 0 to disable$/;"	m	struct:__anon8
+seq	./bseq.h	/^	char *name, *seq, *qual;$/;"	m	struct:__anon17
+seq	./index.c	/^	bseq1_t *seq;$/;"	m	struct:__anon14	file:
+seq	./map.c	/^	bseq1_t *seq;$/;"	m	struct:__anon16	file:
+seq_nt4_table	./sdust.c	/^unsigned char seq_nt4_table[256] = {$/;"	v
+seq_nt4_table	./sketch.c	/^unsigned char seq_nt4_table[256] = {$/;"	v
+shared	./kthread.c	/^	void *shared;$/;"	m	struct:ktp_t	file:
+shift_window	./sdust.c	/^static inline void shift_window(int t, kdq_t(int) *w, int T, int W, int *L, int *rw, int *rv, int *cw, int *cv)$/;"	f	file:
+sort_key_128x	./misc.c	24;"	d	file:
+sort_key_64	./map.c	60;"	d	file:
+start	./sdust.c	/^	int start, finish;$/;"	m	struct:__anon10	file:
+steal_work	./kthread.c	/^static inline long steal_work(kt_for_t *t)$/;"	f	file:
+step	./kthread.c	/^	int step;$/;"	m	struct:__anon12	file:
+step_t	./index.c	/^} step_t;$/;"	t	typeref:struct:__anon14	file:
+step_t	./map.c	/^} step_t;$/;"	t	typeref:struct:__anon16	file:
+t	./kthread.c	/^	struct kt_for_t *t;$/;"	m	struct:__anon11	typeref:struct:__anon11::kt_for_t	file:
+tbatch_size	./index.c	/^	int tbatch_size, n_processed, keep_name;$/;"	m	struct:__anon13	file:
+uint32_v	./minimap.h	/^typedef struct { size_t n, m; uint32_t *a; } uint32_v;$/;"	t	typeref:struct:__anon4
+uint64_v	./minimap.h	/^typedef struct { size_t n, m; uint64_t *a; } uint64_v;$/;"	t	typeref:struct:__anon3
+uint64_v	./sdust.c	/^typedef kvec_t(uint64_t) uint64_v;$/;"	t	file:
+w	./kthread.c	/^	ktf_worker_t *w;$/;"	m	struct:kt_for_t	file:
+w	./minimap.h	/^	int b, w, k;$/;"	m	struct:__anon6
+w	./sdust.c	/^	kdq_t(int) *w;$/;"	m	struct:sdust_buf_s	file:
+worker_for	./map.c	/^static void worker_for(void *_data, long i, int tid) \/\/ kt_for() callback$/;"	f	file:
+worker_pipeline	./index.c	/^static void *worker_pipeline(void *shared, int step, void *in)$/;"	f	file:
+worker_pipeline	./map.c	/^static void *worker_pipeline(void *shared, int step, void *in)$/;"	f	file:
+worker_post	./index.c	/^static void worker_post(void *g, long i, int tid)$/;"	f	file:
+workers	./kthread.c	/^	ktp_worker_t *workers;$/;"	m	struct:ktp_t	file:
+x	./minimap.h	/^ 	uint64_t x, y;$/;"	m	struct:__anon1
+y	./minimap.h	/^ 	uint64_t x, y;$/;"	m	struct:__anon1

@@ -1,0 +1,472 @@
+diff -rupN /storage/home/vxr162/scratch/bwa-0.7.12/bntseq.h bwa-0.7.12/bntseq.h
+--- /storage/home/vxr162/scratch/bwa-0.7.12/bntseq.h	2014-12-23 15:35:48.000000000 -0500
++++ bwa-0.7.12/bntseq.h	2016-01-08 12:47:29.204123000 -0500
+@@ -38,6 +38,25 @@
+ typedef uint8_t ubyte_t;
+ #endif
+ 
++typedef struct
++{
++        uint32_t pos;
++        uint8_t seq[30];
++	uint16_t flag;
++        uint8_t qual;
++        uint8_t  matchLen;
++}fullRec;
++
++typedef struct
++{
++        uint32_t pos;
++	uint16_t flag;
++        uint8_t seq[30];
++        uint8_t qual;
++        uint8_t n_cigar;
++        uint16_t cigar[10];
++}otherRec;
++
+ typedef struct {
+ 	int64_t offset;
+ 	int32_t len;
+@@ -45,6 +64,16 @@ typedef struct {
+ 	uint32_t gi;
+ 	int32_t is_alt;
+ 	char *name, *anno;
++
++        long *curFullCount;
++        long *curOtherCount;
++	long *maxFullCount;
++	long *maxOtherCount;
++        pthread_mutex_t lock;
++	int numThr;
++
++        fullRec **Fr;
++        otherRec **Or;
+ } bntann1_t;
+ 
+ typedef struct {
+diff -rupN /storage/home/vxr162/scratch/bwa-0.7.12/bwa.c bwa-0.7.12/bwa.c
+--- /storage/home/vxr162/scratch/bwa-0.7.12/bwa.c	2014-12-23 15:35:48.000000000 -0500
++++ bwa-0.7.12/bwa.c	2016-01-08 12:47:29.205216929 -0500
+@@ -287,11 +287,16 @@ void bwa_idx_destroy(bwaidx_t *idx)
+ {
+ 	if (idx == 0) return;
+ 	if (idx->mem == 0) {
+-		if (idx->bwt) bwt_destroy(idx->bwt);
+-		if (idx->bns) bns_destroy(idx->bns);
+-		if (idx->pac) free(idx->pac);
++		if (idx->bwt) {bwt_destroy(idx->bwt); idx->bwt=NULL;}
++		if (idx->bns) {bns_destroy(idx->bns); idx->bns=NULL;}
++		if (idx->pac) {free(idx->pac); idx->pac=NULL;}
+ 	} else {
+-		free(idx->bwt); free(idx->bns->anns); free(idx->bns);
++		if (idx->bwt)
++		{
++			free(idx->bwt); 
++			idx->bwt=NULL;
++		}
++		free(idx->bns->anns); free(idx->bns);
+ 		if (!idx->is_shm) free(idx->mem);
+ 	}
+ 	free(idx);
+diff -rupN /storage/home/vxr162/scratch/bwa-0.7.12/bwamem.c bwa-0.7.12/bwamem.c
+--- /storage/home/vxr162/scratch/bwa-0.7.12/bwamem.c	2014-12-23 15:35:48.000000000 -0500
++++ bwa-0.7.12/bwamem.c	2016-01-08 12:47:29.218541971 -0500
+@@ -816,10 +816,12 @@ static inline int get_rlen(int n_cigar, 
+ 	return l;
+ }
+ 
+-void mem_aln2sam(const mem_opt_t *opt, const bntseq_t *bns, kstring_t *str, bseq1_t *s, int n, const mem_aln_t *list, int which, const mem_aln_t *m_)
++void mem_aln2sam(const mem_opt_t *opt, const bntseq_t *bns, kstring_t *str, bseq1_t *s, int n, const mem_aln_t *list, int which, const mem_aln_t *m_, int threadID)
+ {
+ 	int i, l_name;
+ 	mem_aln_t ptmp = list[which], *p = &ptmp, mtmp, *m = 0; // make a copy of the alignment to convert
++	fullRec full;
++        otherRec other;
+ 
+ 	if (m_) mtmp = *m_, m = &mtmp;
+ 	// set flag
+@@ -838,15 +840,47 @@ void mem_aln2sam(const mem_opt_t *opt, c
+ 	ks_resize(str, str->l + s->l_seq + l_name + (s->qual? s->l_seq : 0) + 20);
+ 	kputsn(s->name, l_name, str); kputc('\t', str); // QNAME
+ 	kputw((p->flag&0xffff) | (p->flag&0x10000? 0x100 : 0), str); kputc('\t', str); // FLAG
++	int outSam=0;
+ 	if (p->rid >= 0) { // with coordinate
+ 		kputs(bns->anns[p->rid].name, str); kputc('\t', str); // RNAME
+ 		kputl(p->pos + 1, str); kputc('\t', str); // POS
+ 		kputw(p->mapq, str); kputc('\t', str); // MAPQ
+ 		if (p->n_cigar) { // aligned
++			outSam=0;
+ 			for (i = 0; i < p->n_cigar; ++i) {
+ 				int c = p->cigar[i]&0xf;
+ 				if (!(opt->flag&MEM_F_SOFTCLIP) && !p->is_alt && (c == 3 || c == 4))
+ 					c = which? 4 : 3; // use hard clipping for supplementary alignments
++				if ((p->n_cigar == 1) && (c == 0)) //NEW code
++                                {
++        	                        outSam=1;
++                                        full.pos = (uint32_t)(p->pos)+1;
++					full.flag = (uint16_t) p->flag;
++                                        full.qual = p->mapq;
++                                        full.matchLen = (uint8_t)(p->cigar[i]>>4);
++                                }
++                                else//not full match
++                                {
++					if (p->n_cigar >= 10)
++						printf ("%d%c",p->cigar[i]>>4, "MIDSH"[c]);
++                                        if (i==0)
++                                        {
++                                                outSam = 2;
++                                                other.pos = (uint32_t)(p->pos)+1;
++						other.flag = (uint16_t) p->flag;
++                                                other.qual = p->mapq;
++                                                other.cigar[0] = (uint16_t)((p->cigar[i] & 0xFFF0) | c);
++                                                other.n_cigar = 1;
++                                        }
++                                        else
++                                        {
++						if (i < 10)
++						{
++                                                	other.cigar[other.n_cigar] = (uint16_t)((p->cigar[i] & 0xFFF0) | c);
++	                                                other.n_cigar++;
++						}
++                                        }
++                                }
+ 				kputw(p->cigar[i]>>4, str); kputc("MIDSH"[c], str);
+ 			}
+ 		} else kputc('*', str); // having a coordinate but unaligned (e.g. when copy_mate is true)
+@@ -878,7 +912,79 @@ void mem_aln2sam(const mem_opt_t *opt, c
+ 			if ((p->cigar[p->n_cigar-1]&0xf) == 4 || (p->cigar[p->n_cigar-1]&0xf) == 3) qe -= p->cigar[p->n_cigar-1]>>4;
+ 		}
+ 		ks_resize(str, str->l + (qe - qb) + 1);
+-		for (i = qb; i < qe; ++i) str->s[str->l++] = "ACGTN"[(int)s->seq[i]];
++		int seqIndex=0;
++                bntann1_t *anns = &(bns->anns[p->rid]);
++		for (i = qb; i < qe; ++i) 
++		{
++			str->s[str->l++] = "ACGTN"[(int)s->seq[i]];
++                        char ch = "ACGTN"[(int)s->seq[i]];
++                        int curInd=seqIndex/4;
++			if (outSam==1)
++                        {
++                                switch (seqIndex&3)
++				{
++					case 0:
++	                                        full.seq[curInd]=(ch<<5)&0xc0;
++						break;
++                                	case 1:
++	                                        full.seq[curInd] |= ((ch<<3)&0x30);
++						break;
++					case 2:
++	                                        full.seq[curInd] |= ((ch<<1)&0xc);
++						break;
++					case 3:
++	                                        full.seq[curInd] |= ((ch>>1) & 0x3);
++						break;
++				}
++                        }
++                        else if (outSam==2)
++                        {
++                                switch (seqIndex&3)
++				{
++					case 0:
++	                                        other.seq[curInd]=(ch<<5)&0xc0;
++						break;
++                                	case 1:
++	                                        other.seq[curInd] |= ((ch<<3)&0x30);
++						break;
++					case 2:
++	                                        other.seq[curInd] |= ((ch<<1)&0xc);
++						break;
++					case 3:
++	                                        other.seq[curInd] |= ((ch>>1) & 0x3);
++						break;
++				}
++                        }
++                        seqIndex++;
++		}
++		if (outSam==1)
++                {
++                        memcpy (&(anns->Fr[threadID][anns->curFullCount[threadID]]), &full, sizeof(fullRec));
++                        anns->curFullCount[threadID]++;
++                        if (anns->curFullCount[threadID]==anns->maxFullCount[threadID])
++                        {
++				anns->maxFullCount[threadID]*=2;
++				fullRec *tmp=(fullRec *)malloc(anns->maxFullCount[threadID]*sizeof(fullRec));
++				assert(tmp!=NULL);
++				memcpy (tmp, anns->Fr[threadID], anns->curFullCount[threadID]*sizeof(fullRec));
++				free (anns->Fr[threadID]);
++				anns->Fr[threadID]=tmp;
++                        }
++                }
++		else if (outSam==2)
++                {
++                        memcpy (&(anns->Or[threadID][anns->curOtherCount[threadID]]), &other, sizeof(otherRec));
++                        anns->curOtherCount[threadID]++;
++                        if (anns->curOtherCount[threadID]==anns->maxOtherCount[threadID])
++                        {
++				anns->maxOtherCount[threadID]*=2;
++				otherRec *tmp=(otherRec *)malloc(anns->maxOtherCount[threadID]*sizeof(otherRec));
++				assert(tmp!=NULL);
++				memcpy (tmp, anns->Or[threadID], anns->curOtherCount[threadID]*sizeof(otherRec));
++				free (anns->Or[threadID]);
++				anns->Or[threadID]=tmp;
++                        }
++                }
+ 		kputc('\t', str);
+ 		if (s->qual) { // printf qual
+ 			ks_resize(str, str->l + (qe - qb) + 1);
+@@ -892,8 +998,80 @@ void mem_aln2sam(const mem_opt_t *opt, c
+ 			if ((p->cigar[p->n_cigar-1]&0xf) == 4 || (p->cigar[p->n_cigar-1]&0xf) == 3) qb += p->cigar[p->n_cigar-1]>>4;
+ 		}
+ 		ks_resize(str, str->l + (qe - qb) + 1);
+-		for (i = qe-1; i >= qb; --i) str->s[str->l++] = "TGCAN"[(int)s->seq[i]];
++		int seqIndex=0;
++                bntann1_t *anns = &(bns->anns[p->rid]);
++		for (i = qe-1; i >= qb; --i) 
++		{
++			str->s[str->l++] = "TGCAN"[(int)s->seq[i]];
++			int curInd = seqIndex/4;
++			char ch = "TGCAN"[(int)s->seq[i]];
++			if (outSam==1)
++                        {
++                                switch (seqIndex&3)
++				{
++					case 0:
++	                                        full.seq[curInd] = (ch<<5)&0xc0;
++						break;
++                                	case 1:
++	                                        full.seq[curInd] |= ((ch<<3)&0x30);
++						break;
++					case 2:
++	                                        full.seq[curInd] |= ((ch<<1)&0xc);
++						break;
++					case 3:
++	                                        full.seq[curInd] |= ((ch>>1) & 0x3);
++						break;
++				}
++                        }
++                        else if (outSam==2)
++                        {
++                                switch (seqIndex&3)
++				{
++					case 0:
++	                                        other.seq[curInd] = (ch<<5)&0xc0;
++						break;
++                                	case 1:
++	                                        other.seq[curInd] |= ((ch<<3)&0x30);
++						break;
++					case 2:
++	                                        other.seq[curInd] |= ((ch<<1)&0xc);
++						break;
++					case 3:
++	                                        other.seq[curInd] |= ((ch>>1) & 0x3);
++						break;
++				}
++                        }
++			seqIndex++;
++		}
+ 		kputc('\t', str);
++		if (outSam==1)
++                {
++                        memcpy (&(anns->Fr[threadID][anns->curFullCount[threadID]]), &full, sizeof(fullRec));
++                        anns->curFullCount[threadID]++;
++                        if (anns->curFullCount[threadID]==anns->maxFullCount[threadID])
++                        {
++                                anns->maxFullCount[threadID]*=2;
++                                fullRec *tmp=(fullRec *)malloc(anns->maxFullCount[threadID]*sizeof(fullRec));
++                                assert(tmp!=NULL);
++                                memcpy (tmp, anns->Fr[threadID], anns->curFullCount[threadID]*sizeof(fullRec));
++                                free (anns->Fr[threadID]);
++                                anns->Fr[threadID]=tmp;
++                        }                        
++                }
++                else if (outSam==2)
++                {
++                        memcpy (&(anns->Or[threadID][anns->curOtherCount[threadID]]), &other, sizeof(otherRec));
++                        anns->curOtherCount[threadID]++;
++                        if (anns->curOtherCount[threadID]==anns->maxOtherCount[threadID])
++                        {
++                                anns->maxOtherCount[threadID]*=2;
++                                otherRec *tmp=(otherRec *)malloc(anns->maxOtherCount[threadID]*sizeof(otherRec));
++                                assert(tmp!=NULL);
++                                memcpy (tmp, anns->Or[threadID], anns->curOtherCount[threadID]*sizeof(otherRec));
++                                free (anns->Or[threadID]);
++                                anns->Or[threadID]=tmp;
++                        }                        
++                }
+ 		if (s->qual) { // printf qual
+ 			ks_resize(str, str->l + (qe - qb) + 1);
+ 			for (i = qe-1; i >= qb; --i) str->s[str->l++] = s->qual[i];
+@@ -976,7 +1154,7 @@ int mem_approx_mapq_se(const mem_opt_t *
+ }
+ 
+ // TODO (future plan): group hits into a uint64_t[] array. This will be cleaner and more flexible
+-void mem_reg2sam(const mem_opt_t *opt, const bntseq_t *bns, const uint8_t *pac, bseq1_t *s, mem_alnreg_v *a, int extra_flag, const mem_aln_t *m)
++void mem_reg2sam(const mem_opt_t *opt, const bntseq_t *bns, const uint8_t *pac, bseq1_t *s, mem_alnreg_v *a, int extra_flag, const mem_aln_t *m, int threadID)
+ {
+ 	extern char **mem_gen_alt(const mem_opt_t *opt, const bntseq_t *bns, const uint8_t *pac, mem_alnreg_v *a, int l_query, const char *query);
+ 	kstring_t str;
+@@ -1009,10 +1187,10 @@ void mem_reg2sam(const mem_opt_t *opt, c
+ 		mem_aln_t t;
+ 		t = mem_reg2aln(opt, bns, pac, s->l_seq, s->seq, 0);
+ 		t.flag |= extra_flag;
+-		mem_aln2sam(opt, bns, &str, s, 1, &t, 0, m);
++		mem_aln2sam(opt, bns, &str, s, 1, &t, 0, m, threadID);
+ 	} else {
+ 		for (k = 0; k < aa.n; ++k)
+-			mem_aln2sam(opt, bns, &str, s, aa.n, aa.a, k, m);
++			mem_aln2sam(opt, bns, &str, s, aa.n, aa.a, k, m, threadID);
+ 		for (k = 0; k < aa.n; ++k) free(aa.a[k].cigar);
+ 		free(aa.a);
+ 	}
+@@ -1147,7 +1325,7 @@ typedef struct {
+ 	int64_t n_processed;
+ } worker_t;
+ 
+-static void worker1(void *data, int i, int tid)
++static void worker1(void *data, int i, int tid, int threadID)
+ {
+ 	worker_t *w = (worker_t*)data;
+ 	if (!(w->opt->flag&MEM_F_PE)) {
+@@ -1161,9 +1339,9 @@ static void worker1(void *data, int i, i
+ 	}
+ }
+ 
+-static void worker2(void *data, int i, int tid)
++static void worker2(void *data, int i, int tid, int threadID)
+ {
+-	extern int mem_sam_pe(const mem_opt_t *opt, const bntseq_t *bns, const uint8_t *pac, const mem_pestat_t pes[4], uint64_t id, bseq1_t s[2], mem_alnreg_v a[2]);
++	extern int mem_sam_pe(const mem_opt_t *opt, const bntseq_t *bns, const uint8_t *pac, const mem_pestat_t pes[4], uint64_t id, bseq1_t s[2], mem_alnreg_v a[2], int threadID);
+ 	extern void mem_reg2ovlp(const mem_opt_t *opt, const bntseq_t *bns, const uint8_t *pac, bseq1_t *s, mem_alnreg_v *a);
+ 	worker_t *w = (worker_t*)data;
+ 	if (!(w->opt->flag&MEM_F_PE)) {
+@@ -1172,19 +1350,19 @@ static void worker2(void *data, int i, i
+ 			mem_reg2ovlp(w->opt, w->bns, w->pac, &w->seqs[i], &w->regs[i]);
+ 		} else {
+ 			mem_mark_primary_se(w->opt, w->regs[i].n, w->regs[i].a, w->n_processed + i);
+-			mem_reg2sam(w->opt, w->bns, w->pac, &w->seqs[i], &w->regs[i], 0, 0);
++			mem_reg2sam(w->opt, w->bns, w->pac, &w->seqs[i], &w->regs[i], 0, 0, threadID);
+ 		}
+ 		free(w->regs[i].a);
+ 	} else {
+ 		if (bwa_verbose >= 4) printf("=====> Finalizing read pair '%s' <=====\n", w->seqs[i<<1|0].name);
+-		mem_sam_pe(w->opt, w->bns, w->pac, w->pes, (w->n_processed>>1) + i, &w->seqs[i<<1], &w->regs[i<<1]);
++		mem_sam_pe(w->opt, w->bns, w->pac, w->pes, (w->n_processed>>1) + i, &w->seqs[i<<1], &w->regs[i<<1], threadID);
+ 		free(w->regs[i<<1|0].a); free(w->regs[i<<1|1].a);
+ 	}
+ }
+ 
+ void mem_process_seqs(const mem_opt_t *opt, const bwt_t *bwt, const bntseq_t *bns, const uint8_t *pac, int64_t n_processed, int n, bseq1_t *seqs, const mem_pestat_t *pes0)
+ {
+-	extern void kt_for(int n_threads, void (*func)(void*,int,int), void *data, int n);
++	extern void kt_for(int n_threads, void (*func)(void*,int,int,int), void *data, int n);
+ 	worker_t w;
+ 	mem_pestat_t pes[4];
+ 	double ctime, rtime;
+diff -rupN /storage/home/vxr162/scratch/bwa-0.7.12/bwamem_pair.c bwa-0.7.12/bwamem_pair.c
+--- /storage/home/vxr162/scratch/bwa-0.7.12/bwamem_pair.c	2014-12-28 15:45:41.000000000 -0500
++++ bwa-0.7.12/bwamem_pair.c	2016-01-08 12:47:29.225679612 -0500
+@@ -242,15 +242,15 @@ int mem_pair(const mem_opt_t *opt, const
+ 	return ret;
+ }
+ 
+-void mem_aln2sam(const mem_opt_t *opt, const bntseq_t *bns, kstring_t *str, bseq1_t *s, int n, const mem_aln_t *list, int which, const mem_aln_t *m);
++void mem_aln2sam(const mem_opt_t *opt, const bntseq_t *bns, kstring_t *str, bseq1_t *s, int n, const mem_aln_t *list, int which, const mem_aln_t *m, int threadID);
+ 
+ #define raw_mapq(diff, a) ((int)(6.02 * (diff) / (a) + .499))
+ 
+-int mem_sam_pe(const mem_opt_t *opt, const bntseq_t *bns, const uint8_t *pac, const mem_pestat_t pes[4], uint64_t id, bseq1_t s[2], mem_alnreg_v a[2])
++int mem_sam_pe(const mem_opt_t *opt, const bntseq_t *bns, const uint8_t *pac, const mem_pestat_t pes[4], uint64_t id, bseq1_t s[2], mem_alnreg_v a[2], int threadID)
+ {
+ 	extern int mem_mark_primary_se(const mem_opt_t *opt, int n, mem_alnreg_t *a, int64_t id);
+ 	extern int mem_approx_mapq_se(const mem_opt_t *opt, const mem_alnreg_t *a);
+-	extern void mem_reg2sam(const mem_opt_t *opt, const bntseq_t *bns, const uint8_t *pac, bseq1_t *s, mem_alnreg_v *a, int extra_flag, const mem_aln_t *m);
++	extern void mem_reg2sam(const mem_opt_t *opt, const bntseq_t *bns, const uint8_t *pac, bseq1_t *s, mem_alnreg_v *a, int extra_flag, const mem_aln_t *m, int threadID);
+ 	extern char **mem_gen_alt(const mem_opt_t *opt, const bntseq_t *bns, const uint8_t *pac, const mem_alnreg_v *a, int l_query, const char *query);
+ 
+ 	int n = 0, i, j, z[2], o, subo, n_sub, extra_flag = 1, n_pri[2], n_aa[2];
+@@ -347,10 +347,10 @@ int mem_sam_pe(const mem_opt_t *opt, con
+ 			}
+ 		}
+ 		for (i = 0; i < n_aa[0]; ++i)
+-			mem_aln2sam(opt, bns, &str, &s[0], n_aa[0], aa[0], i, &h[1]); // write read1 hits
++			mem_aln2sam(opt, bns, &str, &s[0], n_aa[0], aa[0], i, &h[1], threadID); // write read1 hits
+ 		s[0].sam = strdup(str.s); str.l = 0;
+ 		for (i = 0; i < n_aa[1]; ++i)
+-			mem_aln2sam(opt, bns, &str, &s[1], n_aa[1], aa[1], i, &h[0]); // write read2 hits
++			mem_aln2sam(opt, bns, &str, &s[1], n_aa[1], aa[1], i, &h[0], threadID); // write read2 hits
+ 		s[1].sam = str.s;
+ 		if (strcmp(s[0].name, s[1].name) != 0) err_fatal(__func__, "paired reads have different names: \"%s\", \"%s\"\n", s[0].name, s[1].name);
+ 		// free
+@@ -380,8 +380,8 @@ no_pairing:
+ 		d = mem_infer_dir(bns->l_pac, a[0].a[0].rb, a[1].a[0].rb, &dist);
+ 		if (!pes[d].failed && dist >= pes[d].low && dist <= pes[d].high) extra_flag |= 2;
+ 	}
+-	mem_reg2sam(opt, bns, pac, &s[0], &a[0], 0x41|extra_flag, &h[1]);
+-	mem_reg2sam(opt, bns, pac, &s[1], &a[1], 0x81|extra_flag, &h[0]);
++	mem_reg2sam(opt, bns, pac, &s[0], &a[0], 0x41|extra_flag, &h[1], threadID);
++	mem_reg2sam(opt, bns, pac, &s[1], &a[1], 0x81|extra_flag, &h[0], threadID);
+ 	if (strcmp(s[0].name, s[1].name) != 0) err_fatal(__func__, "paired reads have different names: \"%s\", \"%s\"\n", s[0].name, s[1].name);
+ 	free(h[0].cigar); free(h[1].cigar);
+ 	return n;
+diff -rupN /storage/home/vxr162/scratch/bwa-0.7.12/kthread.c bwa-0.7.12/kthread.c
+--- /storage/home/vxr162/scratch/bwa-0.7.12/kthread.c	2014-12-23 15:35:48.000000000 -0500
++++ bwa-0.7.12/kthread.c	2016-01-08 12:47:29.278533000 -0500
+@@ -11,13 +11,14 @@ struct kt_for_t;
+ typedef struct {
+ 	struct kt_for_t *t;
+ 	long i;
++	long i1;
+ } ktf_worker_t;
+ 
+ typedef struct kt_for_t {
+ 	int n_threads;
+ 	long n;
+ 	ktf_worker_t *w;
+-	void (*func)(void*,long,int);
++	void (*func)(void*,long,int,int);
+ 	void *data;
+ } kt_for_t;
+ 
+@@ -34,18 +35,19 @@ static inline long steal_work(kt_for_t *
+ static void *ktf_worker(void *data)
+ {
+ 	ktf_worker_t *w = (ktf_worker_t*)data;
++	int nThreads=w->i1;
+ 	long i;
+ 	for (;;) {
+ 		i = __sync_fetch_and_add(&w->i, w->t->n_threads);
+ 		if (i >= w->t->n) break;
+-		w->t->func(w->t->data, i, w - w->t->w);
++		w->t->func(w->t->data, i, w - w->t->w, nThreads);
+ 	}
+ 	while ((i = steal_work(w->t)) >= 0)
+-		w->t->func(w->t->data, i, w - w->t->w);
++		w->t->func(w->t->data, i, w - w->t->w, nThreads);
+ 	pthread_exit(0);
+ }
+ 
+-void kt_for(int n_threads, void (*func)(void*,long,int), void *data, long n)
++void kt_for(int n_threads, void (*func)(void*,long,int,int), void *data, long n)
+ {
+ 	int i;
+ 	kt_for_t t;
+@@ -54,7 +56,7 @@ void kt_for(int n_threads, void (*func)(
+ 	t.w = (ktf_worker_t*)alloca(n_threads * sizeof(ktf_worker_t));
+ 	tid = (pthread_t*)alloca(n_threads * sizeof(pthread_t));
+ 	for (i = 0; i < n_threads; ++i)
+-		t.w[i].t = &t, t.w[i].i = i;
++		t.w[i].t = &t, t.w[i].i = i, t.w[i].i1=i;
+ 	for (i = 0; i < n_threads; ++i) pthread_create(&tid[i], 0, ktf_worker, &t.w[i]);
+ 	for (i = 0; i < n_threads; ++i) pthread_join(tid[i], 0);
+ }
+diff -rupN /storage/home/vxr162/scratch/bwa-0.7.12/Makefile bwa-0.7.12/Makefile
+--- /storage/home/vxr162/scratch/bwa-0.7.12/Makefile	2014-12-23 15:35:48.000000000 -0500
++++ bwa-0.7.12/Makefile	2016-01-08 12:47:29.291571000 -0500
+@@ -1,6 +1,6 @@
+ CC=			gcc
+ #CC=			clang --analyze
+-CFLAGS=		-g -Wall -Wno-unused-function -O2
++CFLAGS=		-g -Wall -Wno-unused-function -O1
+ WRAP_MALLOC=-DUSE_MALLOC_WRAPPERS
+ AR=			ar
+ DFLAGS=		-DHAVE_PTHREAD $(WRAP_MALLOC)

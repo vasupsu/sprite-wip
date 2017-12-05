@@ -1,0 +1,8 @@
+Compile:
+1. Download BWA version [0.7.12](http://sourceforge.net/projects/bio-bwa/files/bwa-0.7.12.tar.bz2/download) from SourceForge, extract the source files, apply the patch bwa.patch, and compile BWA
+2. Modify paths in Make.inc file. To install do,
+make
+This creates sprite-inmemory executable.
+
+Run:
+The script file test/test.sh contains a template to run the whole pipeline.

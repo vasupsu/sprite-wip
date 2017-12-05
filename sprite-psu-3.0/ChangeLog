@@ -1,0 +1,21 @@
+Mon Jan 4 2016 Vasudevan Rengasamy <vxr162@psu.edu>
+	* Reduced AEB,AIB record sizes
+	* Added bwa.patch file to pass read name, comment fields from BWA to
+	PRUNE and to measure time taken to read FASTQ files
+	* Bug fix to parse multiple SAM records present in a single line
+	* Multi-threaded PARSNIP using pthreads
+	* Code to merge multiple VCF files at the end of PARSNIP
+	* New folder utils containing code to dump AEB,AIB files in readable
+	format and to convert BAM file to a set of AEB,AIB files
+	* Output file prefix now specified using -o option instead of
+	specifying as the last command line argument
+	
+Thu Oct  1 2015 Kamesh Madduri <madduri@cse.psu.edu>
+	* Updating source files in preparation for version 2.0    
+
+Sat May 30 2015 Kamesh Madduri <madduri@cse.psu.edu> 
+    * uploading to SourceForge 
+
+Thu Apr  2 2015 Kamesh Madduri <madduri@cse.psu.edu>
+    * importing Vasu's code
+

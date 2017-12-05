@@ -1,0 +1,21 @@
+#!/bin/bash
+#SBATCH -J bwa
+#SBATCH -o unmapped_50x_1P.o%j
+#SBATCH -e unmapped_50x_1P.e%j
+#SBATCH -p normal
+#SBATCH -N 1 #total number of nodes
+#SBATCH -n 1 #total number of mpi tasks
+#SBATCH -t 10:0:00
+#SBATCH --mail-user=vxr162@psu.edu
+#SBATCH --mail-type=all
+
+pwd
+echo "Job started on `hostname` at `date`"
+module load intel
+module load impi
+cd /work/03201/tg824998/IPDPS18/bwa-0.7.16a_new
+#./bwa mem -p -t 16 -o /scratch/03201/tg824998/Venter/aeb_sprite-4/minimap_op_0 /scratch/03201/tg824998/ucsc.hg19.fasta /scratch/03201/tg824998/Venter/aeb_sprite-4/minimap_op_0/unmapped_new.fq
+#./bwa mem -p -t 16 -o /scratch/03201/tg824998/ERR091571/aeb_sprite-4/singleNode/minimap_op_0 /scratch/03201/tg824998/ucsc.hg19.fasta /scratch/03201/tg824998/ERR091571/aeb_sprite-4/singleNode/minimap_op_0/unmapped.fq
+./bwa mem -p -t 16 -o /scratch/03201/tg824998/ERR194147/aeb_sprite-4/singleNode/minimap_op_0 /scratch/03201/tg824998/ucsc.hg19.fasta /scratch/03201/tg824998/ERR194147/aeb_sprite-4/singleNode/minimap_op_0/unmapped.fq
+echo "Job ended on `hostname` at `date`"
+exit
